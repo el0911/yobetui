@@ -12,51 +12,44 @@ function App() {
   const [val, setVal] = useState("");
   const [data, setData] = useState([]);
   const [main, setMain] = useState([]);
-  const onchange = value => {};
+  const [laoding, setLoading] = useState(false);
+ 
+ 
 
-  const submit = () => {};
-
-  const handleChange = e => {
-    const value = e.target.value;
-    setVal(value);
-    const newArray = [];
-    for (let i = 0; i < main.length; i++) {
-      const name = main[i].name.toLowerCase();
-
-      if (name.includes(value.toLowerCase())) {
-        newArray.push(main[i]);
-      }
-    }
-
-    setData(newArray);
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = async (country) => {
+    setLoading(true)
+    try {
       const query = {
-        url: `${api}/all`,
+        url: `${api}?name=${country}`,
         type: "get"
       };
       let result = await Axios(query);
+      setLoading(false)
 
       if (result.data.status) {
         setMain(result.data.response);
-        setData(result.data.response);
+        setData([result.data.response]);
       } else {
         setData([]);
       }
-    };
+    } catch (error) {
+      setLoading(false)
 
-    fetchData();
-  }, []);
+    }
+  };
+
+
+  const handleChange = async e => {
+    const value = e.target.value;
+    setVal(value);
+    fetchData(value)
+   };
+
+   
 
   return (
     <div className="">
-      <div className={spin.spinner}>
-        {main.length == 0 && (
-          <Loader type="Puff" color="#fff" height="100" width="100" />
-        )}
-      </div>
+       
       <div>
         <div className="search">
           <Form.Group md="4" controlId="validationFormikUsername">
@@ -99,6 +92,11 @@ function App() {
           </ListGroup>
           ,
         </div>
+      </div>
+      <div className={spin.spinner}>
+        {laoding  && (
+          <Loader type="Puff" color="#fff" height="100" width="100" />
+        )}
       </div>
     </div>
   );

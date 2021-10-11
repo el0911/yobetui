@@ -2,12 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { MultiSelect } from "@progress/kendo-react-dropdowns";
 import Button from "react-bootstrap/Button";
-import Style from "./index.module.css";
-import Axios from "axios";
+ import Axios from "axios";
 import ListGroup from "react-bootstrap/ListGroup";
 
 const sports = [];
-const api = "https://yobetback.herokuapp.com/api/country";
+const api = "http://localhost:8000/api/country";
 
 const title = {
   float: "left",

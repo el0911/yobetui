@@ -8,28 +8,40 @@ export default function index() {
   return (
     <div className={style.app}>
       <p>
-        Hi, my name is somto, and this is my hopefully not under engineered full
-        stack developer assesment{" "}
+        Hi, my name is somto, and this is my hopefully not over engineered Front End React Developer assesment{" "}
       </p>{" "}
       <br />
       <p> Click on the buttons below to take you to the pages</p>
       <Nav>
         <Nav.Item>
-          <Nav.Link href="/countries">Country search</Nav.Link>
+          <Nav.Link href="/singlecountry">Single Country Search</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link href="/countries">Country Search</Nav.Link>
         </Nav.Item>
         <Nav.Item>
           <Nav.Link href="/casino">Slot Game</Nav.Link>
         </Nav.Item>
 
         <Nav.Item>
-          <Nav.Link href="/multicountries">Multy country search</Nav.Link>
+          <Nav.Link href="/multicountries">Multy Country Search</Nav.Link>
         </Nav.Item>
       </Nav>
-      <Row>
-        <Col></Col>
+      <br />
+      <p>
+        Well you can just login or signup
 
-        <Col></Col>
-      </Row>
+      </p>
+
+      <Nav>
+        <Nav.Item>
+          <Nav.Link href="/signup">Sign up</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link href="/login">Login</Nav.Link>
+        </Nav.Item>
+
+      </Nav>
     </div>
   );
 }

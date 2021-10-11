@@ -7,6 +7,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Loader from "react-loader-spinner";
 import style from "../spin/spin.module.css";
+import axiosCaller from "../../utils/axios";
 let fruitDick = {
   lemon: "🍋",
   apple: "🍎",
@@ -16,10 +17,8 @@ let fruitDick = {
 
 let start = [];
 let wins = [];
-// const api = 'https://yobetback.herokuapp.com/api/game/'
-const api = "http://localhost:8000/api/game/";
-
-export default () => {
+  
+const Slot =  () => {
   const SLOTS_PER_REEL = 12;
   const [spins, setSpins] = useState([]);
   const [points, setPoints] = useState(20);
@@ -76,6 +75,72 @@ export default () => {
     // generate random number smaller than 13 then floor it to settle between 0 and 12 inclusive
     return Math.floor(Math.random() * SLOTS_PER_REEL);
   };
+ 
+
+  const spiner = async timer => {
+    const old = [];
+
+    for (let i = 0; i < spins.length; i++) {
+      let oldSeed = -1;
+      let oldClass = document.getElementById("ring" + i).className;
+      if (oldClass.length > 4) {
+        oldSeed = parseInt(oldClass.slice(10));
+      }
+
+      old.push(oldSeed);
+    }
+
+    setLoader(true);
+
+    const { data } = await axiosCaller.get(
+      `/game/spin?slots=3&&prev=${JSON.stringify(old)}&&start=${JSON.stringify(
+        start
+      )}`,
+      {}
+    );
+
+    setLoader(false);
+
+    for (let i = 0; i < data.lands.length; i++) {
+      document.getElementById("ring" + i).style.animation =
+        "back-spin 1s, spin-" + data.lands[i] + " " + (timer + i * 0.5) + "s";
+      document
+        .getElementById("ring" + i)
+        .setAttribute("class", "ring spin-" + data.lands[i]);
+    }
+    ///get win
+    const w = [];
+
+    // for (let i = 0; i < start.length; i++) {
+    //     const s_Start = start[i];
+    //     const se = data.lands[i]
+    //     w.push((s_Start + se) % 12)
+    // }
+
+ 
+    setTimeout(() => {
+      wins = data.alt;
+      const reward = data.reward;
+      setPoints(points + reward - 1);
+    }, 2800);
+  };
+
+
+  const loadGame = async  () =>{
+    const {data} = await axiosCaller.get('game/loadgame');
+    const {points} = data
+    if (points) {
+        setPoints(points)
+    }
+  };
+
+  useEffect(() => {
+    loadGame()
+  },[])
+
+
+  useEffect(() => {
+
 
   const createSlots = x => {
     const slotAngle = 360 / SLOTS_PER_REEL;
@@ -101,68 +166,17 @@ export default () => {
         key: parseInt(Math.random() * Math.random() * 10000)
       });
     }
-    console.log(start);
-
+ 
     return slots;
   };
-
-  const spiner = async timer => {
-    const old = [];
-
-    for (let i = 0; i < spins.length; i++) {
-      let oldSeed = -1;
-      let oldClass = document.getElementById("ring" + i).className;
-      if (oldClass.length > 4) {
-        oldSeed = parseInt(oldClass.slice(10));
-      }
-
-      old.push(oldSeed);
-    }
-
-    setLoader(true);
-
-    const { data } = await axios.get(
-      `${api}spin?slots=3&&prev=${JSON.stringify(old)}&&start=${JSON.stringify(
-        start
-      )}`,
-      {}
-    );
-
-    setLoader(false);
-
-    for (let i = 0; i < data.lands.length; i++) {
-      document.getElementById("ring" + i).style.animation =
-        "back-spin 1s, spin-" + data.lands[i] + " " + (timer + i * 0.5) + "s";
-      document
-        .getElementById("ring" + i)
-        .setAttribute("class", "ring spin-" + data.lands[i]);
-    }
-    ///get win
-    const w = [];
-
-    // for (let i = 0; i < start.length; i++) {
-    //     const s_Start = start[i];
-    //     const se = data.lands[i]
-    //     w.push((s_Start + se) % 12)
-    // }
-
-    console.log(w);
-
-    setTimeout(() => {
-      wins = data.alt;
-      const reward = data.reward;
-      setPoints(points + reward - 1);
-    }, 2800);
-  };
-
-  useEffect(() => {
     const board = [
       [0, createSlots(0)],
       [1, createSlots(1)],
       [2, createSlots(2)]
     ];
+ 
     setSpins(board);
-  }, []);
+  }, [slotval]);
 
   const center = {
     "text-align": "-webkit-center"
@@ -226,3 +240,8 @@ export default () => {
     </div>
   );
 };
+
+
+
+
+export default Slot
